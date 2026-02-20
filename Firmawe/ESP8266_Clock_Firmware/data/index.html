@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Clock</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        
+        h2 {
+            color: #333;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;  /* Change to 100% to make the inputs fill their container */
+            padding: 8px;
+            padding-right: 40px; /* Space for eye icon */
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        } */
+
+        .input-with-unit {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .input-with-unit input {
+            width: 100%;
+            padding-right: 40px; /* leave room for unit */
+            box-sizing: border-box;
+        }
+
+        .input-with-unit .unit {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper i {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .password-wrapper i:hover {
+            color: #333;
+        }
+
+        .button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background: #218838;
+        }
+
+        p {
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Smart Clock</h1>
+        <form id="configForm">
+            <div class="form-group">
+                <label>SSID:</label>
+                <input type="text" name="wifi_ssid" id="wifi_ssid">
+            </div>
+
+            <div class="form-group">
+                <label>Password:</label>
+                <div class="password-wrapper">
+                    <input type="password" name="wifi_pass" id="wifi_pass">
+                    <!-- Replace Font Awesome icon with a simple text icon -->
+                    <i id="toggleIcon" onclick="togglePassword()">🙉</i> 
+                </div>
+            </div>
+
+            <!-- Clock Config -->
+            <h3>Clock Configuration</h3>
+
+            <!-- Color -->
+            <div class="form-group">
+                <label>Color Palette:</label>
+                <select name="colorPalet" id="colorPalet">
+                    <option value="1">White </option>
+                    <option value="2">Cyan</option>
+                    <option value="3">Red</option>
+                    <option value="4">Blue</option>
+                    <option value="5">Yellow</option>
+                    <option value="6">Bright Blue</option>
+                    <option value="7">Orange</option>
+                    <option value="8">Green</option>
+                </select>
+            </div>
+
+            <!-- Brightness -->
+            <div class="form-group">
+                <label>Brightness (20-80):</label>
+                <input type="number" name="brightness" id="brightness" min="20" max="80">
+            </div>
+
+            <div class="form-group">
+                <label>Night Mode Start:</label>
+                <input type="time" name="nightStart" id="nightStart" min="0" max="24">
+            </div>
+
+            <div class="form-group">
+                <label>Night Mode End:</label>
+                <input type="time" name="nightEnd" id="nightEnd" min="0" max="24">
+            </div>
+
+            <div class="form-group">
+                <label>Timezone:
+                    <a href="https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv" target="_blank" style="font-size: 12px; color: blue; text-decoration: none;">(Help)</a>
+                </label>
+                <input type="text" name="timezone" id="timezone">
+            </div>
+            
+
+            <div class="form-group">
+                <label>24 Hour Format (Y/N):</label>
+                <select name="time_format" id="time_format">
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date Format:</label>
+                <select name="date_format" id="date_format">
+                    <option value = "0">MON DD,YYYY</option>
+                    <option value = "1">YYYY-MM-DD</option>
+                    <option value = "2">DD-MM-YYYY</option>
+                    <option value = "3">MM-DD-YYYY</option>
+                    <option value = "4">YYYY/DD/MM</option>
+                    <option value = "5">DD/MM/YYYY</option>
+                    <option value = "6">MM/DD/YYYY</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Hourly Beep (Y/N):</label>
+                <select name="beepOnHourChange" id="beepOnHourChange">
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                </select>
+            </div>
+
+            <!-- Weather Config -->
+            <h3>Weather Configuration</h3>
+
+            <div class="form-group">
+                <label>Refresh Interval (5-60):</label>
+                <div class="input-with-unit">
+                    <input type="number" name="weatherRefreshInterval" id="weatherRefreshInterval" min="5" max="60">
+                    <span class="unit">min</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Weather Service:</label>
+                <select name="weatherService" id="weatherService" onchange="toggleWeatherFields()">
+                    <option value="wttr">Wttr</option>
+                    <option value="open-meteo">Open-Meteo</option>
+                    <option value="weatherAPI">WeatherAPI</option>
+                    <!-- <option value="openWeather">Open Weather</option> -->
+
+                </select>
+            </div>
+
+
+            <!-- Location based services -->
+            <div id="locationField">
+            <div  class="form-group">
+                <label>Location:</label>
+                <input type="text" name="location" id="location">
+            </div>
+            </div>
+            
+            <!-- Latitude based services -->
+            <div id="latitudeField">
+            <div  class="form-group">
+                <label>Latitude:</label>
+                <input type="text" name="latitude" id="latitude">
+            </div>
+            </div>
+
+            <!-- Longitude based services -->
+            <div id="longitudeField">
+            <div  class="form-group">
+                <label>Longitude:</label>
+                <input type="text" name="longitude" id="longitude">
+            </div>
+            </div>
+
+            <!-- WeatherAPI -->
+            <div id="weatherApiKeyField">
+            <div  class="form-group">
+                <label>API Key:</label>
+                <input type="text" name="weatherApiKey" id="weatherApiKey">
+            </div>
+            </div>
+
+            <!-- OpenWeather -->
+            <div id="openWeatherApiKeyField">
+            <div  class="form-group">
+                <label>API Key:</label>
+                <input type="text" name="openWeatherApiKey" id="openWeatherApiKey">
+            </div>
+            </div>
+
+            
+            <!-- 
+
+            <div class="form-group">
+                <label>Postal Code:</label>
+                <input type="text" name="postal_code" id="postal_code">
+            </div>
+
+            <div class="form-group">
+                <label>Country Code:</label>
+                <input type="text" name="country_code" id="country_code">
+            </div>
+
+            -->
+
+            <!-- Weather Status Box -->
+            <div class="form-group">
+                <div onclick="toggleStatusBox()" style="cursor:pointer; font-weight:bold; font-size:16px; padding:8px; background:white; color:black; border-radius:5px;">
+                    🌤 Current Weather Log ▼
+                </div>
+
+                <div id="statusBox" style="display:none; margin-top:10px; padding:10px; border:1px solid #ccc; border-radius:8px; background:#f9f9f9; text-align:left;">
+                    <!--  <h3 style="margin:0; font-size:16px; color:#333;">Current Weather</h3> -->
+                    <p><b>Date:</b> <span id="statusDate">--</span></p>
+                    <p><b>Temperature:</b> <span id="statusTemp">--</span>°C</p>
+                    <p><b>Humidity:</b> <span id="statusHumidity">--</span>%</p>
+                    <p><b>Weather Code:</b> <span id="statusCode">--</span></p>
+                    <p><b>Description:</b> <span id="statusDesc">--</span></p>
+                </div>
+            </div>
+
+            
+
+            <button type="button" class="button" onclick="saveSettings()">Save Settings</button>
+        </form>
+    </div>
+
+    <script>
+        function togglePassword() {
+            var passInput = document.getElementById("wifi_pass");
+            var icon = document.getElementById("toggleIcon");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                icon.textContent = "🙈";  // Use a closed-eye icon when password is visible
+            } else {
+                passInput.type = "password";
+                icon.textContent = "🙉";  // Use an eye icon when password is hidden👁️
+            }
+        }
+
+        function saveSettings() {
+            var formData = new FormData(document.getElementById("configForm"));
+
+            fetch("/save", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert("Settings saved successfully!");
+            })
+            .catch(error => {
+                alert("Error saving settings: " + error);
+            });
+        }
+
+        function loadSettings() {
+            fetch("/config")
+            .then(response => response.json())
+            .then(data => {
+                Object.keys(data).forEach(key => {
+                    let input = document.getElementById(key);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
+                toggleWeatherFields();
+            })
+            .catch(error => console.error("Error loading settings:", error));
+        }
+
+        function toggleWeatherFields() {
+            var service = document.getElementById("weatherService").value;
+            var locationField = document.getElementById("locationField");
+            var latitudeField = document.getElementById("latitudeField");
+            var longitudeField = document.getElementById("longitudeField");
+            var weatherApiKeyField = document.getElementById("weatherApiKeyField");
+            var openWeatherApiKeyField = document.getElementById("openWeatherApiKeyField");
+
+            // hide all first
+            locationField.style.display = "none";
+            latitudeField.style.display = "none";
+            longitudeField.style.display = "none";
+            weatherApiKeyField.style.display = "none";
+            openWeatherApiKeyField.style.display = "none";
+
+            if (service === "wttr") {
+                locationField.style.display = "block";
+            } else if (service === "open-meteo") {
+                latitudeField.style.display = "block";
+                longitudeField.style.display = "block";
+            } else if (service === "weatherAPI") {
+                latitudeField.style.display = "block";
+                longitudeField.style.display = "block";
+                weatherApiKeyField.style.display = "block";
+            } else if (service === "openWeather") {
+                latitudeField.style.display = "block";
+                longitudeField.style.display = "block";
+                openWeatherApiKeyField.style.display = "block";
+            }
+        }
+
+        
+        function toggleStatusBox() {
+            var box = document.getElementById("statusBox");
+            box.style.display = (box.style.display === "none") ? "block" : "none";
+        }
+
+        // Fetch status from backend
+        function loadWeatherStatus() {
+            fetch("/weatherStatus")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("statusDate").textContent = data.date || "--";
+                document.getElementById("statusTemp").textContent = data.temperature ?? "--";
+                document.getElementById("statusHumidity").textContent = data.humidity ?? "--";
+                document.getElementById("statusCode").textContent = data.weatherCode || "--";
+                document.getElementById("statusDesc").textContent = data.description || "--";
+            })
+            .catch(err => console.error("Error fetching weather status:", err));
+        }
+
+
+    
+        window.onload = function () {
+            loadSettings();
+            loadWeatherStatus();
+        };
+    </script>
+
+</body>
+</html>
