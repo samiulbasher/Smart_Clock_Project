@@ -151,8 +151,8 @@ updateDateTime(bool is24HourFormat) {
 
 
 /*
-#define WIFI_SSID   "hidden network"                    // set your SSID
-#define WIFI_PASSWD "ogokoigala"                        // set your wifi password
+#define WIFI_SSID   "yourssid"                    // set your SSID
+#define WIFI_PASSWD "password"                        // set your wifi password
 
 
 

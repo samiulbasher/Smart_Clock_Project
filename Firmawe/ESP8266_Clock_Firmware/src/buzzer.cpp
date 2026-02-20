@@ -58,7 +58,7 @@ void manageBuzzer() {
 }
 
 /*
-// beeper function without blocking (but some limitations because of updateWeather() is blocking)
+// beeper function without blocking (but some limitations! because of updateWeather() is blocking)
 void beeper(uint8_t count, uint8_t pattern) {
   if (beep.active) return; // ignore if already beeping
 
